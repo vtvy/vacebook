@@ -11,6 +11,7 @@ import ChangePassword from "./pages/ChangePassword";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { AccContext } from "./helpers/AccContext";
+import RequireAuth from "./helpers/RequireAuth";
 
 function App() {
   const [authState, setAuthState] = useState({
@@ -19,21 +20,11 @@ function App() {
     status: false,
   });
 
-  const checkAuth = (nextState, replace, next) => {
-    if (!authState.status) {
-      replace({
-        pathname: "/signIn",
-        state: { nextPathname: nextState.location.pathname },
-      });
-    }
-    next();
-  };
-
   useEffect(() => {
     axios
-      .get("http://localhost:9998//account/auth", {
+      .get("http://localhost:9998/account/auth", {
         headers: {
-          accessToken: localStorage.getItem("accessToken"),
+          accessToken: localStorage.getItem("Token"),
         },
       })
       .then((response) => {
@@ -50,7 +41,7 @@ function App() {
   }, []);
 
   const logout = () => {
-    localStorage.removeItem("accessToken");
+    localStorage.removeItem("Token");
     setAuthState({ username: "", id: 0, status: false });
   };
 
@@ -78,34 +69,16 @@ function App() {
             </div>
           </div>
           <Routes>
-            <Route path="/signUp" exact element={SignUp} />
-            <Route path="/signIn" exact element={Login} />
-            <Route path="/profile/:id" exact element={Profile} />
-            <Route path="/" exact element={Home} onEnter={checkAuth()} />
-            <Route
-              path="/post/create"
-              exact
-              element={CreatePost}
-              render={() => (
-                isLoggedIn() ? (
-                  <Redirect to="/front"/>
-                ) : (
-                  <Home />
-                )}
-            />
-            <Route
-              path="/post/:id"
-              exact
-              element={Post}
-              onEnter={checkAuth()}
-            />
-            <Route
-              path="/changePassword"
-              exact
-              element={ChangePassword}
-              onEnter={checkAuth()}
-            />
-            <Route path="*" exact element={PageNotFound} />
+            <Route path="/signUp" element={<SignUp />} />
+            <Route path="/signIn" element={Login} />
+            <Route element={<RequireAuth />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/profile/:id" element={<Profile />} />
+            </Route>
+            <Route path="/post/create" element={CreatePost} />
+            <Route path="/post/:id" element={Post} />
+            <Route path="/changePassword" element={ChangePassword} />
+            <Route path="*" element={PageNotFound} />
           </Routes>
         </Router>
       </AccContext.Provider>

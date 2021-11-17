@@ -1,6 +1,5 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
 import { AccContext } from "../helpers/AccContext";
@@ -12,12 +11,12 @@ function Home() {
   let history = useNavigate();
 
   useEffect(() => {
-    if (!localStorage.getItem("accessToken")) {
+    if (!localStorage.getItem("Token")) {
       history.push("/login");
     } else {
       axios
         .get("http://localhost:3001/posts", {
-          headers: { accessToken: localStorage.getItem("accessToken") },
+          headers: { accessToken: localStorage.getItem("Token") },
         })
         .then((response) => {
           setListOfPosts(response.data.listOfPosts);
@@ -35,7 +34,7 @@ function Home() {
       .post(
         "http://localhost:3001/likes",
         { PostId: postId },
-        { headers: { accessToken: localStorage.getItem("accessToken") } }
+        { headers: { accessToken: localStorage.getItem("Token") } }
       )
       .then((response) => {
         setListOfPosts(

@@ -15,8 +15,8 @@ function SignUp() {
   });
 
   const onSubmit = (data) => {
-    axios.post("http://localhost:9998/auth", data).then(() => {
-      console.log(data);
+    axios.post("http://localhost:9998/account", data).then((response) => {
+      console.log(response);
     });
   };
 
