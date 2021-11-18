@@ -27,7 +27,7 @@ function Login() {
     });
   };
   return (
-    <div className="loginContainer">
+    <div className="SignContainer form-outline mb-4">
       <label>Username:</label>
       <input
         type="text"

@@ -1,3 +1,4 @@
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Home from "./pages/Home";
@@ -49,7 +50,7 @@ function App() {
     <div className="App">
       <AccContext.Provider value={{ authState, setAuthState }}>
         <Router>
-          <div className="navbar">
+          <div className="vacebook-navbar navbar-dark bg-dark">
             <div className="links">
               {!authState.status ? (
                 <>
@@ -68,18 +69,20 @@ function App() {
               {authState.status && <button onClick={logout}> Sign out</button>}
             </div>
           </div>
-          <Routes>
-            <Route path="/signUp" element={<SignUp />} />
-            <Route path="/signIn" element={Login} />
-            <Route element={<RequireAuth />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/profile/:id" element={<Profile />} />
-            </Route>
-            <Route path="/post/create" element={CreatePost} />
-            <Route path="/post/:id" element={Post} />
-            <Route path="/changePassword" element={ChangePassword} />
-            <Route path="*" element={PageNotFound} />
-          </Routes>
+          <div className="vacebook-container">
+            <Routes>
+              <Route path="/signUp" element={<SignUp />} />
+              <Route path="/signIn" element={Login} />
+              <Route element={<RequireAuth />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/profile/:id" element={<Profile />} />
+              </Route>
+              <Route path="/post/create" element={CreatePost} />
+              <Route path="/post/:id" element={Post} />
+              <Route path="/changePassword" element={ChangePassword} />
+              <Route path="*" element={PageNotFound} />
+            </Routes>
+          </div>
         </Router>
       </AccContext.Provider>
     </div>

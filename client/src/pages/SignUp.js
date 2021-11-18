@@ -7,11 +7,16 @@ function SignUp() {
   const initialValues = {
     username: "",
     password: "",
+    confirmPassword: "",
   };
 
   const validationSchema = Yup.object().shape({
     username: Yup.string().min(3).max(30).required(),
     password: Yup.string().min(4).max(20).required(),
+    confirmPassword: Yup.string().oneOf(
+      [Yup.ref("password"), null],
+      "Passwords must match"
+    ),
   });
 
   const onSubmit = (data) => {
@@ -27,11 +32,11 @@ function SignUp() {
         onSubmit={onSubmit}
         validationSchema={validationSchema}
       >
-        <Form className="formContainer">
+        <Form className="SignContainer">
           <label>Username: </label>
           <ErrorMessage name="username" component="span" />
           <Field
-            autocomplete="off"
+            autoComplete="off"
             id="inputCreatePost"
             name="username"
             placeholder="(Ex. John123...)"
@@ -40,14 +45,27 @@ function SignUp() {
           <label>Password: </label>
           <ErrorMessage name="password" component="span" />
           <Field
-            autocomplete="off"
+            autoComplete="off"
             type="password"
             id="inputCreatePost"
             name="password"
             placeholder="Your Password..."
           />
 
-          <button type="submit"> Register</button>
+          <label>Confirm Password: </label>
+          <ErrorMessage name="confirmPassword" component="span" />
+          <Field
+            autoComplete="off"
+            type="password"
+            id="inputCreatePost"
+            name="confirmPassword"
+            placeholder="Confirm Your Password..."
+          />
+
+          <button className="btn btn-primary btn-lg" type="submit">
+            {" "}
+            Register
+          </button>
         </Form>
       </Formik>
     </div>
