@@ -1,31 +1,26 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AccContext } from "../helpers/AccContext";
 
-function SignUp() {
+function SignIn() {
   const initialValues = {
     username: "",
     password: "",
-    confirmPassword: "",
   };
-
+  const { setAuthState } = useContext(AccContext);
+  const navigate = useNavigate();
   const validationSchema = Yup.object().shape({
     username: Yup.string().min(3).max(30).required(),
     password: Yup.string().min(4).max(20).required(),
-    confirmPassword: Yup.string().oneOf(
-      [Yup.ref("password"), null],
-      "Passwords must match"
-    ),
   });
 
-  const { setAuthState } = useContext(AccContext);
-
   const onSubmit = (data) => {
-    axios.post("http://localhost:9998/account", data).then((response) => {
-      if (!response.data) {
-        alert("Username exist!");
+    axios.post("http://localhost:9998/signIn", data).then((response) => {
+      if (response.data.err) {
+        alert(response.data.err);
       } else {
         alert("Successful!");
         setAuthState({
@@ -33,6 +28,7 @@ function SignUp() {
           id: response.data.id,
           status: true,
         });
+        navigate("/");
       }
     });
   };
@@ -41,45 +37,39 @@ function SignUp() {
     <div>
       <div className="card shadow-2-strong sign-card">
         <div className="card-body p-5 text-center">
-          <h3 className="mb-5">Sign up</h3>
+          <h3 className="mb-5">Sign in</h3>
           <Formik
             initialValues={initialValues}
             onSubmit={onSubmit}
             validationSchema={validationSchema}
           >
             <Form className="SignContainer">
-              <label className="form-label">Username: </label>
+              <label className="form-label" htmlFor="inputUsername">
+                Username:{" "}
+              </label>
               <ErrorMessage name="username" component="span" />
               <Field
                 autoComplete="off"
-                id="inputCreatePost"
+                id="inputUsername"
                 name="username"
                 placeholder="(Ex. John123...)"
               />
 
-              <label>Password: </label>
+              <label htmlFor="inputPassword" className="form-label">
+                Password:{" "}
+              </label>
               <ErrorMessage name="password" component="span" />
               <Field
                 autoComplete="off"
                 type="password"
-                id="inputCreatePost"
+                id="inputPassword"
                 name="password"
                 placeholder="Your Password..."
               />
 
-              <label>Confirm Password: </label>
-              <ErrorMessage name="confirmPassword" component="span" />
-              <Field
-                autoComplete="off"
-                type="password"
-                id="inputCreatePost"
-                name="confirmPassword"
-                placeholder="Confirm Your Password..."
-              />
-
               <button className="btn btn-primary btn-lg" type="submit">
                 {" "}
-                Register
+                Sign in
               </button>
             </Form>
           </Formik>
@@ -89,4 +79,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default SignIn;

@@ -1,15 +1,12 @@
 const { verify } = require("jsonwebtoken");
 
 const validateToken = (req, res, next) => {
-  const accessToken = req.header("Token");
+  const Token = req.header("Token");
 
-  if (!accessToken) return res.json({ error: "User not signed in!" });
+  if (!Token) return res.json({ error: "User not signed in!" });
 
   try {
-    const validToken = verify(
-      accessToken,
-      "Please Don't Break My First Website"
-    );
+    const validToken = verify(Token, "Please Don't Break My First Website");
     req.user = validToken;
     if (validToken) {
       return next();

@@ -1,11 +1,13 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+import "jquery/dist/jquery";
+import "bootstrap/dist/js/bootstrap.min.js";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Home from "./pages/Home";
 import CreatePost from "./pages/CreatePost";
 import Post from "./pages/PostDetail";
 import SignUp from "./pages/SignUp";
-import Login from "./pages/Login";
+import SignIn from "./pages/SignIn";
 import PageNotFound from "./pages/PageNotFound";
 import Profile from "./pages/Profile";
 import ChangePassword from "./pages/ChangePassword";
@@ -72,7 +74,7 @@ function App() {
           <div className="vacebook-container">
             <Routes>
               <Route path="/signUp" element={<SignUp />} />
-              <Route path="/signIn" element={Login} />
+              <Route path="/signIn" element={<SignIn />} />
               <Route element={<RequireAuth />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/profile/:id" element={<Profile />} />
