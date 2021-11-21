@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import axios from "axios";
 import { AccContext } from "../helpers/AccContext";
@@ -21,18 +22,20 @@ function SignUp() {
   });
 
   const { setAuthState } = useContext(AccContext);
+  const navigate = useNavigate();
 
   const onSubmit = (data) => {
     axios.post("http://localhost:9998/account", data).then((response) => {
       if (!response.data) {
         alert("Username exist!");
       } else {
-        alert("Successful!");
+        localStorage.setItem("Token", response.data.token);
         setAuthState({
           username: data.username,
           id: response.data.id,
           status: true,
         });
+        navigate("/");
       }
     });
   };

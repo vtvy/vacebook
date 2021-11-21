@@ -4,12 +4,8 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
-const { validateToken } = require("./middleware/AccMiddleware");
 const { sign } = require("jsonwebtoken");
-
-app.use(cors());
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+const { validateToken } = require("./middleware/AccMiddleware");
 
 const db = mysql.createConnection({
   host: "localhost",
@@ -18,10 +14,14 @@ const db = mysql.createConnection({
   database: "VNForum",
 });
 
-//Application programming interface (API)
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+//Vacebook application programming interface (API)
 
 //Account
-// Sign up an account (1)
+// Sign up an vacebook account (1)
 app.post("/account", (req, res) => {
   const data = req.body;
   bcrypt.hash(data.password, 10).then((hash) => {
@@ -43,14 +43,13 @@ app.post("/account", (req, res) => {
   });
 });
 
-// Validate account
+// Validate vacebook account
 app.get("/account/auth", validateToken, (req, res) => {
   res.json(req.user);
-  console.log("Successful");
 });
 
-//Sign in an account (2)
-app.post("/signIn", (req, res) => {
+//Sign in an vacebook account (2)
+app.post("/signin", (req, res) => {
   const data = req.body;
   db.query("call sign_in(?);", data.username, (err, result) => {
     if (!result[0][0].id) {
@@ -65,7 +64,7 @@ app.post("/signIn", (req, res) => {
             "Please Don't Break My First Website"
           );
           res.json({
-            token: accessToken,
+            token: Token,
             username: data.username,
             id: result[0][0].id,
           });
@@ -73,6 +72,23 @@ app.post("/signIn", (req, res) => {
       });
     }
   });
+});
+
+//Create a vacebook post
+app.post("/post/create", validateToken, (req, res) => {
+  const post = req.body;
+  post.id = req.user.id;
+  db.query(
+    "call add_post(?,?,?);",
+    [post.title, post.Text, post.id],
+    (err, result) => {
+      if (!result[0][0].id) {
+        res.json({ error: "Invalid Vacebook Account!" });
+      } else {
+        res.json("Successful!");
+      }
+    }
+  );
 });
 
 app.listen(9998, () => {

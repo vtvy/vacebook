@@ -15,7 +15,7 @@ function ChangePassword() {
         },
         {
           headers: {
-            accessToken: localStorage.getItem("accessToken"),
+            Token: localStorage.getItem("Token"),
           },
         }
       )

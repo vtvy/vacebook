@@ -5,12 +5,12 @@ import { AccContext } from "../helpers/AccContext";
 
 function Post() {
   let { id } = useParams();
+  let navigate = useNavigate();
+
   const [postObject, setPostObject] = useState({});
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const { authState } = useContext(AccContext);
-
-  let history = useNavigate();
 
   useEffect(() => {
     axios.get(`http://localhost:3001/posts/byId/${id}`).then((response) => {
@@ -32,7 +32,7 @@ function Post() {
         },
         {
           headers: {
-            accessToken: localStorage.getItem("accessToken"),
+            Token: localStorage.getItem("Token"),
           },
         }
       )
@@ -53,7 +53,7 @@ function Post() {
   const deleteComment = (id) => {
     axios
       .delete(`http://localhost:3001/comments/${id}`, {
-        headers: { accessToken: localStorage.getItem("accessToken") },
+        headers: { Token: localStorage.getItem("Token") },
       })
       .then(() => {
         setComments(
@@ -70,7 +70,7 @@ function Post() {
         headers: { accessToken: localStorage.getItem("accessToken") },
       })
       .then(() => {
-        history.push("/");
+        navigate("/");
       });
   };
 

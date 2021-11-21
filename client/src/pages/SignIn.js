@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import { useContext } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
@@ -18,11 +18,11 @@ function SignIn() {
   });
 
   const onSubmit = (data) => {
-    axios.post("http://localhost:9998/signIn", data).then((response) => {
-      if (response.data.err) {
-        alert(response.data.err);
+    axios.post("http://localhost:9998/signin", data).then((response) => {
+      if (response.data.error) {
+        alert(response.data.error);
       } else {
-        alert("Successful!");
+        localStorage.setItem("Token", response.data.token);
         setAuthState({
           username: data.username,
           id: response.data.id,

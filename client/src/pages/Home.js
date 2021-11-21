@@ -1,104 +1,148 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
 import { AccContext } from "../helpers/AccContext";
+import IndividualPost from "../components/IndividualPost";
+import * as Yup from "yup";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 
 function Home() {
-  const [listOfPosts, setListOfPosts] = useState([]);
-  const [likedPosts, setLikedPosts] = useState([]);
+  const initialValues = {
+    title: "",
+    Text: "",
+  };
+  let navigate = useNavigate();
   const { authState } = useContext(AccContext);
-  let history = useNavigate();
 
   useEffect(() => {
     if (!localStorage.getItem("Token")) {
-      history.push("/login");
+      navigate("/signin");
     } else {
-      axios
-        .get("http://localhost:3001/posts", {
-          headers: { accessToken: localStorage.getItem("Token") },
-        })
-        .then((response) => {
-          setListOfPosts(response.data.listOfPosts);
-          setLikedPosts(
-            response.data.likedPosts.map((like) => {
-              return like.PostId;
-            })
-          );
-        });
+      // axios
+      //   .get("http://localhost:3001/posts", {
+      //     headers: { accessToken: localStorage.getItem("accessToken") },
+      //   })
+      //   .then((response) => {
+      //     setListOfPosts(response.data.listOfPosts);
+      //     setLikedPosts(
+      //       response.data.likedPosts.map((like) => {
+      //         return like.PostId;
+      //       })
+      //     );
+      //   });
     }
   }, []);
 
-  const likeAPost = (postId) => {
-    axios
-      .post(
-        "http://localhost:3001/likes",
-        { PostId: postId },
-        { headers: { accessToken: localStorage.getItem("Token") } }
-      )
-      .then((response) => {
-        setListOfPosts(
-          listOfPosts.map((post) => {
-            if (post.id === postId) {
-              if (response.data.liked) {
-                return { ...post, Likes: [...post.Likes, 0] };
-              } else {
-                const likesArray = post.Likes;
-                likesArray.pop();
-                return { ...post, Likes: likesArray };
-              }
-            } else {
-              return post;
-            }
-          })
-        );
+  const [listOfPosts, setListOfPosts] = useState([]);
+  const [likedPosts, setLikedPosts] = useState([]);
+  const [isOpen, setOpen] = useState(false);
 
-        if (likedPosts.includes(postId)) {
-          setLikedPosts(
-            likedPosts.filter((id) => {
-              return id != postId;
-            })
-          );
-        } else {
-          setLikedPosts([...likedPosts, postId]);
-        }
+  const validationSchema = Yup.object().shape({
+    title: Yup.string().required("You must input a Title!"),
+    Text: Yup.string().required("You must input your status!"),
+  });
+
+  const onSubmit = (data) => {
+    axios
+      .post("http://localhost:9998/post/create", data, {
+        headers: { Token: localStorage.getItem("Token") },
+      })
+      .then((response) => {
+        setListOfPosts({
+          listOfPosts: listOfPosts.unshift(data),
+        });
+        console.log("Createpost ne");
       });
   };
 
+  // useEffect(() => {
+
+  //     axios
+  //       .get("http", {
+  //         headers: { Token: localStorage.getItem("Token") },
+  //       })
+  //       .then((response) => {
+  //         setListOfPosts(response.data.listOfPosts);
+  //         setLikedPosts(
+  //           response.data.likedPosts.map((like) => {
+  //             return like.PostId;
+  //           })
+  //         );
+  //       });
+  // }, []);
+
+  const [showOrHide, handleModal] = useState(false);
+
   return (
     <div>
-      {listOfPosts.map((value, key) => {
-        return (
-          <div key={key} className="post">
-            <div className="title"> {value.title} </div>
-            <div
-              className="body"
-              onClick={() => {
-                history.push(`/post/${value.id}`);
-              }}
-            >
-              {value.postText}
-            </div>
-            <div className="footer">
-              <div className="username">
-                <Link to={`/profile/${value.UserId}`}> {value.username} </Link>
-              </div>
-              <div className="buttons">
-                <ThumbUpAltIcon
+      <div
+        className="home-nav"
+        onClick={() => {
+          handleModal(true);
+        }}
+      >
+        Hey {authState.username.toUpperCase()}, what do you think now?
+      </div>
+      <div className={showOrHide ? "modal open" : "modal"}>
+        <div className="createPostPage ">
+          <Formik
+            initialValues={initialValues}
+            onSubmit={onSubmit}
+            validationSchema={validationSchema}
+          >
+            <Form className="formContainer">
+              <label>Title: </label>
+              <ErrorMessage name="title" component="span" />
+              <Field
+                autocomplete="off"
+                id="inputCreatePost"
+                name="title"
+                placeholder="(Ex. Title...)"
+              />
+              <label>Post: </label>
+              <ErrorMessage name="Text" component="span" />
+              <Field
+                autocomplete="off"
+                id="inputCreatePost"
+                name="Text"
+                placeholder="(Ex. Post...)"
+              />
+              <div className="createPostFooter">
+                <button
                   onClick={() => {
-                    likeAPost(value.id);
+                    handleModal(false);
                   }}
-                  className={
-                    likedPosts.includes(value.id) ? "unlikeBttn" : "likeBttn"
-                  }
-                />
-
-                <label> {value.Likes.length}</label>
+                >
+                  {" "}
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  onClick={() => {
+                    handleModal(false);
+                  }}
+                >
+                  {" "}
+                  Create Post
+                </button>{" "}
               </div>
-            </div>
-          </div>
+            </Form>
+          </Formik>
+        </div>
+      </div>
+
+      {/* {listOfPosts.map((value, key) => {
+        return (
+          <IndividualPost
+            key={key}
+            title={value.title}
+            id={value.id}
+            username={value.username}
+            numLike={value.numLike}
+            isLike={value.isLike}
+          />
         );
-      })}
+      })} */}
     </div>
   );
 }
