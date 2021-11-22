@@ -4,7 +4,7 @@ import "bootstrap/dist/js/bootstrap.min.js";
 import "./App.css";
 import { Route, Routes, Link, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
-import CreatePost from "./pages/CreatePost";
+import HomeIcon from "@material-ui/icons/Home";
 import Post from "./pages/PostDetail";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import ChangePassword from "./pages/ChangePassword";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Avatar from "./assets/images/index";
 import { AccContext } from "./helpers/AccContext";
 
 function App() {
@@ -21,6 +22,8 @@ function App() {
     id: 0,
     status: false,
   });
+
+  const [avatarPath, setAvatarPath] = useState(0);
 
   useEffect(() => {
     axios
@@ -62,7 +65,9 @@ function App() {
               </>
             ) : (
               <>
-                <Link to="/"> Home Page</Link>
+                <Link to="/">
+                  <HomeIcon color="success" />
+                </Link>
               </>
             )}
           </div>
@@ -70,6 +75,13 @@ function App() {
             {authState.status && (
               <>
                 <h1>{authState.username} </h1>
+                <img
+                  className="avatar"
+                  src={Avatar.filter((path, index) => {
+                    return index === avatarPath;
+                  })}
+                  alt="avatar"
+                />
                 <button onClick={logout}> Sign out</button>
               </>
             )}

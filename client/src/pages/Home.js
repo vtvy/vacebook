@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AccContext } from "../helpers/AccContext";
 import IndividualPost from "../components/IndividualPost";
+import CancelIcon from "@material-ui/icons/Cancel";
 import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 
@@ -91,6 +92,13 @@ function Home() {
             validationSchema={validationSchema}
           >
             <Form className="formContainer">
+              <div className="cancel-button">
+                <CancelIcon
+                  onClick={() => {
+                    handleModal(false);
+                  }}
+                />
+              </div>
               <label>Title: </label>
               <ErrorMessage name="title" component="span" />
               <Field
@@ -109,14 +117,6 @@ function Home() {
               />
               <div className="createPostFooter">
                 <button
-                  onClick={() => {
-                    handleModal(false);
-                  }}
-                >
-                  {" "}
-                  Close
-                </button>
-                <button
                   type="submit"
                   onClick={() => {
                     handleModal(false);
@@ -130,11 +130,10 @@ function Home() {
           </Formik>
         </div>
       </div>
-
       {/* {listOfPosts.map((value, key) => {
         return (
           <IndividualPost
-            key={key}
+          key={key}
             title={value.title}
             id={value.id}
             username={value.username}
