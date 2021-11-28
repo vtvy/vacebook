@@ -5,7 +5,7 @@ import "./App.css";
 import { Route, Routes, Link, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import HomeIcon from "@material-ui/icons/Home";
-import Post from "./pages/PostDetail";
+import Comment from "./pages/Comment";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import PageNotFound from "./pages/PageNotFound";
@@ -41,6 +41,7 @@ function App() {
             id: response.data.id,
             status: true,
           });
+          setAvatarPath(response.data.id % 20);
         }
       });
   }, []);
@@ -74,14 +75,17 @@ function App() {
           <div className="NavContainer">
             {authState.status && (
               <>
-                <h1>{authState.username} </h1>
-                <img
-                  className="avatar"
-                  src={Avatar.filter((path, index) => {
-                    return index === avatarPath;
-                  })}
-                  alt="avatar"
-                />
+                <Link className="userbox" to="/">
+                  <img
+                    className="avatar"
+                    src={Avatar.filter((path, index) => {
+                      return index === avatarPath;
+                    })}
+                    alt="avatar"
+                  />
+                  <div className="username">{authState.username}</div>
+                </Link>
+
                 <button onClick={logout}> Sign out</button>
               </>
             )}
@@ -93,7 +97,7 @@ function App() {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/" element={<Home />} />
             <Route path="/profile/:id" element={<Profile />} />
-            <Route path="/post/:id" element={Post} />
+            <Route path="/post/:id" element={<Comment />} />
             <Route path="/changepassword" element={ChangePassword} />
             <Route path="*" element={PageNotFound} />
           </Routes>

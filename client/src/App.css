@@ -1,17 +1,19 @@
-* {
-  margin: 0;
-  padding: 0;
-}
-
 .App {
   background-color: #508bfc;
   width: 100%;
-  height: 100vh;
-  min-height: 560px;
   display: flex;
   align-items: center;
   flex-direction: column;
-  padding-bottom: 5vh;
+  min-height: 100vh;
+}
+
+a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: white;
+}
+a:hover {
+  color: white;
 }
 
 /* NAVBAR */
@@ -19,17 +21,15 @@
 .vacebook-navbar {
   width: 100%;
   height: 56px;
-  background-color: rgb(0, 0, 0);
-  color: black;
   display: flex;
   position: fixed;
-  align-items: center;
   z-index: 1;
   font-family: Arial, Helvetica, sans-serif;
+  justify-content: space-between;
 }
 .vacebook-navbar .links {
-  flex: 50%;
   height: 100%;
+  cursor: pointer;
   display: flex;
   align-items: center;
 }
@@ -37,38 +37,40 @@
 .vacebook-navbar button {
   width: 100px;
   height: 40px;
-  cursor: pointer;
-  margin-right: 10px;
+  line-height: 20px;
+  margin: 0 8px;
   background-color: white;
+  border: none;
+  border-radius: 10px;
 }
 
-.vacebook-navbar .avatar {
+.avatar {
   height: 32px;
+  margin-right: 8px;
 }
 
 .vacebook-navbar .NavContainer {
-  flex: 50%;
   height: 100%;
   display: flex;
-  justify-content: flex-end;
   align-items: center;
 }
-a {
-  margin-left: 20px;
-  text-decoration: none;
-  color: white;
+
+.userbox {
+  display: flex;
 }
 
-.vacebook-navbar h1 {
-  text-align: center;
-  margin: 10px;
-  color: white;
-  font-weight: lighter;
+.username {
+  line-height: 32px;
+}
+
+.username:hover {
+  color: #9b9799;
 }
 
 .vacebook-container {
-  margin-top: 56px;
-  width: 60%;
+  margin-top: 64px;
+  width: 70%;
+  min-width: 700px;
 }
 
 /* Sign */
@@ -76,8 +78,10 @@ a {
 .sign-card {
   border-radius: 1rem;
   width: 50%;
+  height: 75vh;
+  min-width: 220px;
   display: flex;
-  margin: 70px 25%;
+  margin: 50px 25%;
 }
 
 .SignContainer {
@@ -88,25 +92,30 @@ a {
   height: 50vh;
 }
 
-.SignContainer input,
-button {
+.vacebook-input {
+  width: 80%;
   height: 50px;
   border-radius: 8px;
   border: none;
   margin: 10px;
   padding: 10px;
+  border: 2px solid dodgerblue;
 }
 
 .SignContainer button {
   background-color: dodgerblue;
+  width: 80%;
   color: white;
 }
 
-.SignContainer input {
-  border: 2px solid dodgerblue;
-}
+/* HOME */
 
-/* CREATE POST PAGE CSS */
+.homeContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+}
 
 .modal {
   bottom: 0;
@@ -121,11 +130,9 @@ button {
 .home-nav {
   width: 70%;
   padding: 8px 32px;
-  margin: 4px 15%;
   box-sizing: border-box;
   border-radius: 20px;
-  align-items: center;
-  line-height: 32px;
+  line-height: 28px;
   cursor: pointer;
   background-color: rgba(255, 255, 255, 0.4);
 }
@@ -155,14 +162,9 @@ button {
   color: #9b9799;
 }
 
-.formContainer #inputCreatePost {
-  height: 40px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  border: 2px solid #0e8ea5;
-  border-radius: 5px;
-  padding-left: 10px;
-  font-size: 20px;
+.cancel-button:hover {
+  color: #ff0000;
+  cursor: pointer;
 }
 
 .createPostFooter {
@@ -170,9 +172,8 @@ button {
 }
 
 .formContainer button {
-  margin-top: 15px;
+  flex: 1;
   height: 40px;
-  border: none;
   background-color: rgb(35, 146, 214);
   border-radius: 5px;
   color: white;
@@ -188,113 +189,128 @@ span {
 }
 
 .post {
-  width: 400px;
-  height: 300px;
   border-radius: 10px;
+  width: 70%;
+  height: 444px;
   display: flex;
   flex-direction: column;
-  margin-top: 50px;
-  border: 1px solid lightgray;
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 24px;
 
+  font-family: Arial, Helvetica, sans-serif;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 .post:hover {
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  box-shadow: rgba(100, 100, 111, 0.6) 0px 7px 29px 0px;
   cursor: pointer;
 }
-.post .title {
-  flex: 20%;
-  border-bottom: 1px solid lightgray;
-  background-color: dodgerblue;
-  display: grid;
+.post .header {
+  flex: 15%;
+  background-color: rgb(12, 45, 78);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
   place-content: center;
   color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+}
+
+.header .userinfo {
+  flex: 50%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.userinfo .username {
+  /* flex: 50%; */
+}
+.userinfo .buttons {
+  /* flex: 50%; */
+}
+
+.header .title {
+  text-align: center;
 }
 
 .post .body {
-  flex: 60%;
+  flex: 70%;
   display: grid;
+  padding: 20px;
+  background-color: aliceblue;
+  padding: 8px;
   place-content: center;
 }
 
 .post .footer {
-  flex: 20%;
-  border-top: 1px solid lightgray;
+  flex: 15%;
+  padding: 8px;
   display: flex;
   align-items: center;
-  padding-left: 15px;
-  background-color: dodgerblue;
-  color: white;
+  justify-content: space-between;
+  background-color: rgb(12, 45, 78);
+  color: aliceblue;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
 }
 
-.footer .username {
-  flex: 50%;
-}
 .footer .buttons {
-  flex: 50%;
+  margin: 0 auto;
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
+}
+
+.footer .footer-text {
+  padding-left: 4px;
+}
+
+.buttons .numLike {
+  margin: 0 8px;
+  color: white;
 }
 
 .likeBttn {
-  color: rgba(250, 250, 250, 0.8);
+  color: #1877f2;
 }
 .unlikeBttn {
   color: white;
 }
 
-/* INDIVIDUAL POST */
-.postPage {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  height: 100%;
-}
-
-.leftSide {
-  flex: 50%;
-  height: calc(100vh - 70px);
-  display: grid;
-  place-items: center;
-}
-
-.rightSide {
-  flex: 50%;
-  height: calc(100vh - 70px);
-  display: grid;
-  place-items: center;
+/* COMMENT */
+.commentPage {
   display: flex;
   flex-direction: column;
-}
-
-.rightSide .addCommentContainer {
-  flex: 20%;
   width: 100%;
-  display: grid;
-  place-items: center;
-  margin-top: 25px;
+  height: 100%;
+  align-items: center;
 }
 
-.addCommentContainer input,
-button {
-  width: 200px;
+.commentPart {
+  padding: 56px;
+}
+
+.addCommentContainer {
+  display: flex;
   height: 50px;
+}
+
+.addCommentContainer .inputComment {
+  flex: 1;
   border-radius: 8px;
+}
+
+.addCommentContainer .buttonComment {
+  background-color: rgb(20, 37, 54);
+  border-radius: 8px;
+  margin-left: 80px;
   border: none;
 }
 
 .addCommentContainer button {
-  background-color: dodgerblue;
   color: white;
 }
 
 .addCommentContainer input {
-  border: 2px solid dodgerblue;
+  border: 2px solid rgba(255, 3, 3, 0.466);
 }
 
 .rightSide .listOfComments {

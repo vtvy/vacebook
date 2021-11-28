@@ -42,42 +42,45 @@ function SignUp() {
 
   return (
     <div>
-      <div className="card shadow-2-strong sign-card">
-        <div className="card-body p-5 text-center">
-          <h3 className="mb-5">Sign up</h3>
+      <div className="card sign-card">
+        <div className="card-body mb-5 text-center">
+          <h3 className="mb-2">Sign up</h3>
           <Formik
             initialValues={initialValues}
             onSubmit={onSubmit}
             validationSchema={validationSchema}
           >
             <Form className="SignContainer">
-              <label className="form-label">Username: </label>
+              <label htmlFor="signup-username">Username:</label>
               <ErrorMessage name="username" component="span" />
               <Field
                 autoComplete="off"
-                id="inputCreatePost"
+                id="signup-username"
                 name="username"
                 placeholder="(Ex. John123...)"
+                className="vacebook-input"
               />
 
-              <label>Password: </label>
+              <label htmlFor="signup-password">Password: </label>
               <ErrorMessage name="password" component="span" />
               <Field
                 autoComplete="off"
                 type="password"
-                id="inputCreatePost"
+                id="signup-password"
                 name="password"
                 placeholder="Your Password..."
+                className="vacebook-input"
               />
 
-              <label>Confirm Password: </label>
+              <label htmlFor="signup-cf-password">Confirm Password: </label>
               <ErrorMessage name="confirmPassword" component="span" />
               <Field
                 autoComplete="off"
                 type="password"
-                id="inputCreatePost"
+                id="signup-cf-password"
                 name="confirmPassword"
                 placeholder="Confirm Your Password..."
+                className="vacebook-input"
               />
 
               <button className="btn btn-primary btn-lg" type="submit">

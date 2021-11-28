@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AccContext } from "../helpers/AccContext";
-import IndividualPost from "../components/IndividualPost";
+import ShowPost from "../components/ShowPost";
 import CancelIcon from "@material-ui/icons/Cancel";
 import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
@@ -12,31 +12,25 @@ function Home() {
     title: "",
     Text: "",
   };
+
   let navigate = useNavigate();
   const { authState } = useContext(AccContext);
+  const [listOfPosts, setListOfPosts] = useState([]);
+  const [likedPosts, setLikedPosts] = useState([]);
 
   useEffect(() => {
     if (!localStorage.getItem("Token")) {
       navigate("/signin");
     } else {
-      // axios
-      //   .get("http://localhost:3001/posts", {
-      //     headers: { accessToken: localStorage.getItem("accessToken") },
-      //   })
-      //   .then((response) => {
-      //     setListOfPosts(response.data.listOfPosts);
-      //     setLikedPosts(
-      //       response.data.likedPosts.map((like) => {
-      //         return like.PostId;
-      //       })
-      //     );
-      //   });
+      axios
+        .get("http://localhost:9998/posts/list", {
+          headers: { Token: localStorage.getItem("Token") },
+        })
+        .then((response) => {
+          setListOfPosts(response.data);
+        });
     }
   }, []);
-
-  const [listOfPosts, setListOfPosts] = useState([]);
-  const [likedPosts, setLikedPosts] = useState([]);
-  const [isOpen, setOpen] = useState(false);
 
   const validationSchema = Yup.object().shape({
     title: Yup.string().required("You must input a Title!"),
@@ -49,33 +43,23 @@ function Home() {
         headers: { Token: localStorage.getItem("Token") },
       })
       .then((response) => {
-        setListOfPosts({
-          listOfPosts: listOfPosts.unshift(data),
-        });
-        console.log("Createpost ne");
+        const postToAdd = {
+          id: authState.id,
+          pText: data.Text,
+          pusername: authState.username,
+          PID: response.data,
+          title: data.title,
+          numLike: 0,
+          isLike: 0,
+        };
+        setListOfPosts([postToAdd, ...listOfPosts]);
       });
   };
-
-  // useEffect(() => {
-
-  //     axios
-  //       .get("http", {
-  //         headers: { Token: localStorage.getItem("Token") },
-  //       })
-  //       .then((response) => {
-  //         setListOfPosts(response.data.listOfPosts);
-  //         setLikedPosts(
-  //           response.data.likedPosts.map((like) => {
-  //             return like.PostId;
-  //           })
-  //         );
-  //       });
-  // }, []);
 
   const [showOrHide, handleModal] = useState(false);
 
   return (
-    <div>
+    <div className="homeContent">
       <div
         className="home-nav"
         onClick={() => {
@@ -99,18 +83,18 @@ function Home() {
                   }}
                 />
               </div>
-              <label>Title: </label>
+              <label htmlFor="inputTitlePost">Title: </label>
               <ErrorMessage name="title" component="span" />
               <Field
-                autocomplete="off"
-                id="inputCreatePost"
+                autoComplete="off"
+                id="inputTitlePost"
                 name="title"
                 placeholder="(Ex. Title...)"
               />
-              <label>Post: </label>
+              <label htmlFor="inputCreatePost">Post: </label>
               <ErrorMessage name="Text" component="span" />
               <Field
-                autocomplete="off"
+                autoComplete="off"
                 id="inputCreatePost"
                 name="Text"
                 placeholder="(Ex. Post...)"
@@ -130,18 +114,7 @@ function Home() {
           </Formik>
         </div>
       </div>
-      {/* {listOfPosts.map((value, key) => {
-        return (
-          <IndividualPost
-          key={key}
-            title={value.title}
-            id={value.id}
-            username={value.username}
-            numLike={value.numLike}
-            isLike={value.isLike}
-          />
-        );
-      })} */}
+      <ShowPost listOfPosts={listOfPosts} setListOfPosts={setListOfPosts} />
     </div>
   );
 }

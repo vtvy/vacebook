@@ -53,6 +53,7 @@ function SignIn() {
                 id="inputUsername"
                 name="username"
                 placeholder="(Ex. John123...)"
+                className="vacebook-input"
               />
 
               <label htmlFor="inputPassword" className="form-label">
@@ -65,6 +66,7 @@ function SignIn() {
                 id="inputPassword"
                 name="password"
                 placeholder="Your Password..."
+                className="vacebook-input"
               />
 
               <button className="btn btn-primary btn-lg" type="submit">

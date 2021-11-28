@@ -1,33 +1,42 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import ShowPost from "../components/ShowPost";
 import { AccContext } from "../helpers/AccContext";
 
-function Post() {
+function Comment() {
   let { id } = useParams();
   let navigate = useNavigate();
 
-  const [postObject, setPostObject] = useState({});
+  const [post, setPost] = useState([]);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const { authState } = useContext(AccContext);
 
   useEffect(() => {
-    axios.get(`http://localhost:3001/posts/byId/${id}`).then((response) => {
-      setPostObject(response.data);
-    });
+    if (!localStorage.getItem("Token")) {
+      navigate("/signin");
+    } else {
+      axios
+        .get(`http://localhost:9998/posts/byId/${id}`, {
+          headers: { Token: localStorage.getItem("Token") },
+        })
+        .then((response) => {
+          setPost(response.data);
+        });
 
-    axios.get(`http://localhost:3001/comments/${id}`).then((response) => {
-      setComments(response.data);
-    });
+      axios.get(`http://localhost:9998/comments/${id}`).then((response) => {
+        setComments(response.data);
+      });
+    }
   }, []);
 
   const addComment = () => {
     axios
       .post(
-        "http://localhost:3001/comments",
+        "http://localhost:9998/comment/create",
         {
-          commentBody: newComment,
+          cmtText: newComment,
           PostId: id,
         },
         {
@@ -36,17 +45,13 @@ function Post() {
           },
         }
       )
-      .then((response) => {
-        if (response.data.error) {
-          console.log(response.data.error);
-        } else {
-          const commentToAdd = {
-            commentBody: newComment,
-            username: response.data.username,
-          };
-          setComments([...comments, commentToAdd]);
-          setNewComment("");
-        }
+      .then((res) => {
+        const commentToAdd = {
+          cText: newComment,
+          Username: authState.username,
+        };
+        setComments([...comments, commentToAdd]);
+        setNewComment("");
       });
   };
 
@@ -64,16 +69,6 @@ function Post() {
       });
   };
 
-  const deletePost = (id) => {
-    axios
-      .delete(`http://localhost:3001/posts/${id}`, {
-        headers: { accessToken: localStorage.getItem("accessToken") },
-      })
-      .then(() => {
-        navigate("/");
-      });
-  };
-
   const editPost = (option) => {
     if (option === "title") {
       let newTitle = prompt("Enter New Title:");
@@ -84,11 +79,11 @@ function Post() {
           id: id,
         },
         {
-          headers: { accessToken: localStorage.getItem("accessToken") },
+          headers: { Token: localStorage.getItem("Token") },
         }
       );
 
-      setPostObject({ ...postObject, title: newTitle });
+      setPost({ ...post, title: newTitle });
     } else {
       let newPostText = prompt("Enter New Text:");
       axios.put(
@@ -102,14 +97,14 @@ function Post() {
         }
       );
 
-      setPostObject({ ...postObject, postText: newPostText });
+      setPost({ ...post, postText: newPostText });
     }
   };
 
   return (
-    <div className="postPage">
-      <div className="leftSide">
-        <div className="post" id="individual">
+    <div className="commentPage">
+      {/* <div className="leftSide">
+         <div className="post" id="individual">
           <div
             className="title"
             onClick={() => {
@@ -144,10 +139,12 @@ function Post() {
             )}
           </div>
         </div>
-      </div>
-      <div className="rightSide">
+      </div> */}
+      <ShowPost listOfPosts={post} setListOfPosts={setPost} />
+      <div className="commentPart">
         <div className="addCommentContainer">
           <input
+            className="inputComment"
             type="text"
             placeholder="Comment..."
             autoComplete="off"
@@ -156,15 +153,18 @@ function Post() {
               setNewComment(event.target.value);
             }}
           />
-          <button onClick={addComment}> Add Comment</button>
+          <button className="buttonComment" onClick={addComment}>
+            {" "}
+            Add Comment
+          </button>
         </div>
         <div className="listOfComments">
           {comments.map((comment, key) => {
             return (
               <div key={key} className="comment">
-                {comment.commentBody}
-                <label> Username: {comment.username}</label>
-                {authState.username === comment.username && (
+                {comment.cText}
+                <label> Username: {comment.Username}</label>
+                {authState.username === comment.Username && (
                   <button
                     onClick={() => {
                       deleteComment(comment.id);
@@ -182,4 +182,4 @@ function Post() {
   );
 }
 
-export default Post;
+export default Comment;
