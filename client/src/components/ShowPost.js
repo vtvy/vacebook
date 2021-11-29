@@ -30,41 +30,29 @@ function ShowPost(props) {
       });
   };
 
-  //   const likeAPost = (postId) => {
-  //     axios
-  //       .post(
-  //         "http://localhost:3001/likes",
-  //         { PostId: postId },
-  //         { headers: { accessToken: localStorage.getItem("Token") } }
-  //       )
-  //       .then((response) => {
-  //         setListOfPosts(
-  //           listOfPosts.map((post) => {
-  //             if (post.id === postId) {
-  //               if (response.data.liked) {
-  //                 return { ...post, Likes: [...post.Likes, 0] };
-  //               } else {
-  //                 const likesArray = post.Likes;
-  //                 likesArray.pop();
-  //                 return { ...post, Likes: likesArray };
-  //               }
-  //             } else {
-  //               return post;
-  //             }
-  //           })
-  //         );
-
-  //         if (likedPosts.includes(postId)) {
-  //           setLikedPosts(
-  //             likedPosts.filter((id) => {
-  //               return id != postId;
-  //             })
-  //           );
-  //         } else {
-  //           setLikedPosts([...likedPosts, postId]);
-  //         }
-  //       });
-  //   };
+  const likeAPost = (postId) => {
+    axios
+      .post(
+        "http://localhost:9998/like",
+        { PostId: postId },
+        { headers: { Token: localStorage.getItem("Token") } }
+      )
+      .then((response) => {
+        props.setListOfPosts(
+          props.listOfPosts.map((post) => {
+            if (post.PID === postId) {
+              return {
+                ...post,
+                isLike: post.isLike + response.data,
+                numLike: post.numLike + response.data,
+              };
+            } else {
+              return post;
+            }
+          })
+        );
+      });
+  };
 
   return (
     <>
@@ -73,7 +61,7 @@ function ShowPost(props) {
           <div key={key} className="post">
             <div className="header">
               <div className="userinfo">
-                <Link className="userbox" to="/">
+                <Link className="userbox buttons" to={`/profile/${value.id}`}>
                   <img
                     className="avatar"
                     src={Avatar.filter((path, index) => {
@@ -98,12 +86,14 @@ function ShowPost(props) {
             </div>
             <div className="body">{value.pText}</div>
             <div className="footer">
-              <div className="buttons">
-                {/* <label className="numLike">{value.numLike}</label> */}
+              <div
+                className="buttons"
+                /* <label className="numLike">{value.numLike}</label> */
+                onClick={() => {
+                  likeAPost(value.PID);
+                }}
+              >
                 <ThumbUpAltIcon
-                  // onClick={() => {
-                  //   likeAPost(value.id);
-                  // }}
                   className={value.isLike ? "likeBttn" : "unlikeBttn"}
                 />
                 <div className="footer-text">Like</div>
@@ -114,9 +104,7 @@ function ShowPost(props) {
                   navigate(`/post/${value.PID}`);
                 }}
               >
-                <ChatBubbleOutlineIcon
-                  className={value.isLike ? "likeBttn" : "unlikeBttn"}
-                />
+                <ChatBubbleOutlineIcon />
                 <div className="footer-text">Comment</div>
               </div>
             </div>

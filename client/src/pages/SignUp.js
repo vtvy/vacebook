@@ -26,7 +26,7 @@ function SignUp() {
 
   const onSubmit = (data) => {
     axios.post("http://localhost:9998/account", data).then((response) => {
-      if (!response.data) {
+      if (response.data.error) {
         alert("Username exist!");
       } else {
         localStorage.setItem("Token", response.data.token);

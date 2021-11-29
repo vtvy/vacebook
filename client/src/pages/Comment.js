@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import DeleteIcon from "@material-ui/icons/Delete";
 import axios from "axios";
 import ShowPost from "../components/ShowPost";
 import { AccContext } from "../helpers/AccContext";
+import { Link } from "react-router-dom";
+import Avatar from "../assets/images/index";
 
 function Comment() {
   let { id } = useParams();
@@ -32,38 +35,44 @@ function Comment() {
   }, []);
 
   const addComment = () => {
-    axios
-      .post(
-        "http://localhost:9998/comment/create",
-        {
-          cmtText: newComment,
-          PostId: id,
-        },
-        {
-          headers: {
-            Token: localStorage.getItem("Token"),
+    if (newComment !== "") {
+      axios
+        .post(
+          "http://localhost:9998/comment/create",
+          {
+            cmtText: newComment,
+            PostId: id,
           },
-        }
-      )
-      .then((res) => {
-        const commentToAdd = {
-          cText: newComment,
-          Username: authState.username,
-        };
-        setComments([...comments, commentToAdd]);
-        setNewComment("");
-      });
+          {
+            headers: {
+              Token: localStorage.getItem("Token"),
+            },
+          }
+        )
+        .then((res) => {
+          const commentToAdd = {
+            id: authState.id,
+            cmtId: res.data,
+            cText: newComment,
+            Username: authState.username,
+          };
+          setComments([...comments, commentToAdd]);
+          setNewComment("");
+        });
+    } else {
+      alert("You has not comment yet");
+    }
   };
 
   const deleteComment = (id) => {
     axios
-      .delete(`http://localhost:3001/comments/${id}`, {
+      .delete(`http://localhost:9998/comment/${id}`, {
         headers: { Token: localStorage.getItem("Token") },
       })
       .then(() => {
         setComments(
           comments.filter((val) => {
-            return val.id != id;
+            return val.cmtId !== id;
           })
         );
       });
@@ -103,43 +112,6 @@ function Comment() {
 
   return (
     <div className="commentPage">
-      {/* <div className="leftSide">
-         <div className="post" id="individual">
-          <div
-            className="title"
-            onClick={() => {
-              if (authState.username === postObject.username) {
-                editPost("title");
-              }
-            }}
-          >
-            {postObject.title}
-          </div>
-          <div
-            className="body"
-            onClick={() => {
-              if (authState.username === postObject.username) {
-                editPost("body");
-              }
-            }}
-          >
-            {postObject.postText}
-          </div>
-          <div className="footer">
-            {postObject.username}
-            {authState.username === postObject.username && (
-              <button
-                onClick={() => {
-                  deletePost(postObject.id);
-                }}
-              >
-                {" "}
-                Delete Post
-              </button>
-            )}
-          </div>
-        </div>
-      </div> */}
       <ShowPost listOfPosts={post} setListOfPosts={setPost} />
       <div className="commentPart">
         <div className="addCommentContainer">
@@ -153,8 +125,7 @@ function Comment() {
               setNewComment(event.target.value);
             }}
           />
-          <button className="buttonComment" onClick={addComment}>
-            {" "}
+          <button className="buttons buttonComment " onClick={addComment}>
             Add Comment
           </button>
         </div>
@@ -162,17 +133,32 @@ function Comment() {
           {comments.map((comment, key) => {
             return (
               <div key={key} className="comment">
-                {comment.cText}
-                <label> Username: {comment.Username}</label>
-                {authState.username === comment.Username && (
-                  <button
-                    onClick={() => {
-                      deleteComment(comment.id);
-                    }}
+                <div className="userinfo">
+                  <Link
+                    className="userbox buttons"
+                    to={`/profile/${comment.id}`}
                   >
-                    X
-                  </button>
-                )}
+                    <img
+                      className="avatar"
+                      src={Avatar.filter((path, index) => {
+                        return index === comment.id % 20;
+                      })}
+                      alt="avatar"
+                    />
+                    <div className="username">{comment.Username}</div>
+                  </Link>
+                  {authState.id === comment.id && (
+                    <div
+                      onClick={() => {
+                        deleteComment(comment.cmtId);
+                      }}
+                      className="buttons"
+                    >
+                      <DeleteIcon />
+                    </div>
+                  )}
+                </div>
+                <div className="cmtText">{comment.cText}</div>
               </div>
             );
           })}

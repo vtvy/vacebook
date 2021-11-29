@@ -26,7 +26,7 @@ app.post("/account", (req, res) => {
   bcrypt.hash(data.password, 10).then((hash) => {
     db.query("call sign_up(?,?);", [data.username, hash], (err, result) => {
       if (!result[0][0].id) {
-        res.json({ error: "Wrong Username Or Password Combination" });
+        res.json({ error: "Wrong Username Or Password" });
       } else {
         const Token = sign(
           { username: data.username, id: result[0][0].id },
@@ -42,21 +42,32 @@ app.post("/account", (req, res) => {
   });
 });
 
-// Validate vacebook account
+// Validate vacebook account (2)
 app.get("/account/auth", validateToken, (req, res) => {
-  res.json(req.user);
+  User = req.user;
+  db.query(
+    "select validate_user(?,?) as id;",
+    [User.id, User.username],
+    (err, result) => {
+      if (!result[0].id) {
+        res.json({ error: "Invalid Vacebook Account!" });
+      } else {
+        res.json(req.user);
+      }
+    }
+  );
 });
 
-// Sign in an vacebook account (2)
+// Sign in an vacebook account (3)
 app.post("/signin", (req, res) => {
   const data = req.body;
   db.query("call sign_in(?);", data.username, (err, result) => {
     if (!result[0][0].id) {
-      res.json({ error: "Wrong Username Or Password Combination" });
+      res.json({ error: "Wrong Username Or Password" });
     } else {
       bcrypt.compare(data.password, result[0][0].pass).then((match) => {
         if (!match) {
-          res.json({ error: "Wrong Username Or Password Combination" });
+          res.json({ error: "Wrong Username Or Password" });
         } else {
           const Token = sign(
             { username: data.username, id: result[0][0].id },
@@ -73,7 +84,7 @@ app.post("/signin", (req, res) => {
   });
 });
 
-// Create a vacebook post (3)
+// Create a vacebook post (4)
 app.post("/post/create", validateToken, (req, res) => {
   const post = req.body;
   UserId = req.user.id;
@@ -90,7 +101,7 @@ app.post("/post/create", validateToken, (req, res) => {
   );
 });
 
-// Show all vacebook posts (4)
+// Show all vacebook posts (5)
 app.get("/posts/list", validateToken, (req, res) => {
   UserId = req.user.id;
   db.query("call listPost(?);", UserId, (err, result) => {
@@ -98,7 +109,7 @@ app.get("/posts/list", validateToken, (req, res) => {
   });
 });
 
-// Show a vacebook post of a post id (5)
+// Show a vacebook post of a post id (6)
 app.get("/posts/byId/:id", validateToken, (req, res) => {
   const PostId = req.params.id;
   UserId = req.user.id;
@@ -107,20 +118,20 @@ app.get("/posts/byId/:id", validateToken, (req, res) => {
   });
 });
 
-// Add a comment (6)
+// Add a comment (7)
 app.post("/comment/create", validateToken, (req, res) => {
   comment = req.body;
   UserId = req.user.id;
   db.query(
     "call add_cmt(?,?,?);",
     [comment.cmtText, comment.PostId, UserId],
-    () => {
-      res.json("Successful!");
+    (err, result) => {
+      res.json(result[0][0].cmtId);
     }
   );
 });
 
-// Show all comments of a post (7)
+// Show all comments of a post (8)
 app.get("/comments/:id", (req, res) => {
   const PostId = req.params.id;
   db.query("call list_cmt_of(?);", PostId, (err, result) => {
@@ -128,7 +139,23 @@ app.get("/comments/:id", (req, res) => {
   });
 });
 
-// Delete a post (8)
+// Reaction a post (9)
+app.post("/like", validateToken, (req, res) => {
+  const PostId = req.body.PostId;
+  UserId = req.user.id;
+  db.query("select act_like(?,?) as act;", [PostId, UserId], (err, result) => {
+    res.json(result[0].act);
+  });
+});
+
+// Delete a comment (10)
+app.delete("/comment/:id", validateToken, (req, res) => {
+  const cmtId = req.params.id;
+  db.query("call delete_cmt(?);", cmtId);
+  res.json("Delete comment successful!");
+});
+
+// Delete a post (11)
 app.delete("/post/delete/:id", validateToken, (req, res) => {
   const PostId = req.params.id;
   UserId = req.user.id;
@@ -139,6 +166,70 @@ app.delete("/post/delete/:id", validateToken, (req, res) => {
       res.json("Delete Successful!");
     }
   });
+});
+
+// Get basic user information (12)
+app.get("/user/info/:id", validateToken, (req, res) => {
+  const thisUserId = req.params.id;
+  db.query(
+    "select get_username_of(?) as username;",
+    thisUserId,
+    (err, result) => {
+      res.json(result[0].username);
+    }
+  );
+});
+
+// Get all post of a user (13)
+app.get("/posts/byuserId/:id", validateToken, (req, res) => {
+  const thisUserId = req.params.id;
+  UserId = req.user.id;
+  db.query(
+    "call getPostByUserID(?,?);",
+    [UserId, thisUserId],
+    (err, result) => {
+      res.json(result[0]);
+    }
+  );
+});
+
+// Change the password (14)
+app.put("/user/changepassword", validateToken, (req, res) => {
+  User = req.user;
+  const user = req.body;
+  db.query("call sign_in(?);", User.username, (err, result) => {
+    if (!result[0][0].id) {
+      res.json({ error: "Wrong Username Or Password" });
+      console.log(0);
+    } else {
+      bcrypt.compare(user.oldPassword, result[0][0].pass).then((match) => {
+        if (!match) {
+          res.json({ error: "Wrong Username Or Password" });
+        } else {
+          bcrypt.hash(user.newPassword, 10).then((hash) => {
+            db.query("call update_password(?,?);", [User.id, hash]);
+            res.json("Change Password Successful!");
+          });
+        }
+      });
+    }
+  });
+});
+
+// Show all deleted posts of a user (15)
+app.get("/deleted/posts/:id", validateToken, (req, res) => {
+  UserId = req.user.id;
+  db.query("call get_deleted_posts(?);", UserId, (err, result) => {
+    res.json(result[0]);
+  });
+});
+
+// Delete permanently a post (16)
+app.delete("/post/delete/permant/:id", validateToken, (req, res) => {
+  UserId = req.user.id;
+  PostId = req.params.id;
+  db.query("call delete_post_permant(?,?);", [PostId, UserId]);
+  res.json("Delete Permanently!");
 });
 
 app.listen(9998, () => {

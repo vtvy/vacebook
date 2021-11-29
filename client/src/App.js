@@ -61,13 +61,19 @@ function App() {
           <div className="links">
             {!authState.status ? (
               <>
-                <Link to="/signin"> Sign in</Link>
-                <Link to="/signup"> Sign up</Link>
+                <Link to="/signin" className="buttons">
+                  {" "}
+                  Sign in
+                </Link>
+                <Link to="/signup" className="buttons">
+                  {" "}
+                  Sign up
+                </Link>
               </>
             ) : (
               <>
-                <Link to="/">
-                  <HomeIcon color="success" />
+                <Link to="/" className="buttons">
+                  <HomeIcon />
                 </Link>
               </>
             )}
@@ -75,7 +81,10 @@ function App() {
           <div className="NavContainer">
             {authState.status && (
               <>
-                <Link className="userbox" to="/">
+                <Link
+                  className="userbox buttons"
+                  to={`/profile/${authState.id}`}
+                >
                   <img
                     className="avatar"
                     src={Avatar.filter((path, index) => {
@@ -86,7 +95,10 @@ function App() {
                   <div className="username">{authState.username}</div>
                 </Link>
 
-                <button onClick={logout}> Sign out</button>
+                <button className="buttons" onClick={logout}>
+                  {" "}
+                  Sign out
+                </button>
               </>
             )}
           </div>
@@ -98,7 +110,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/profile/:id" element={<Profile />} />
             <Route path="/post/:id" element={<Comment />} />
-            <Route path="/changepassword" element={ChangePassword} />
+            <Route path="/changepassword" element={<ChangePassword />} />
             <Route path="*" element={PageNotFound} />
           </Routes>
         </div>

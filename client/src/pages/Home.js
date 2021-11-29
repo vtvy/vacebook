@@ -61,18 +61,29 @@ function Home() {
   return (
     <div className="homeContent">
       <div
-        className="home-nav"
+        className="home-nav buttons"
         onClick={() => {
           handleModal(true);
         }}
       >
-        Hey {authState.username.toUpperCase()}, what do you think now?
+        Hey{" "}
+        {authState.username.charAt(0).toUpperCase() +
+          authState.username.slice(1)}
+        , what do you think now?
       </div>
       <div className={showOrHide ? "modal open" : "modal"}>
         <div className="createPostPage ">
           <Formik
             initialValues={initialValues}
-            onSubmit={onSubmit}
+            onSubmit={(values, actions) => {
+              onSubmit(values);
+              actions.resetForm({
+                values: {
+                  title: "",
+                  Text: "",
+                },
+              });
+            }}
             validationSchema={validationSchema}
           >
             <Form className="formContainer">
@@ -83,33 +94,38 @@ function Home() {
                   }}
                 />
               </div>
-              <label htmlFor="inputTitlePost">Title: </label>
+              <label className="form-label" htmlFor="inputTitlePost">
+                Title:{" "}
+              </label>
               <ErrorMessage name="title" component="span" />
               <Field
                 autoComplete="off"
                 id="inputTitlePost"
                 name="title"
                 placeholder="(Ex. Title...)"
+                className="vacebook-input"
               />
-              <label htmlFor="inputCreatePost">Post: </label>
+              <label className="form-label" htmlFor="inputCreatePost">
+                Post:{" "}
+              </label>
               <ErrorMessage name="Text" component="span" />
               <Field
                 autoComplete="off"
                 id="inputCreatePost"
                 name="Text"
                 placeholder="(Ex. Post...)"
+                className="vacebook-input"
               />
-              <div className="createPostFooter">
-                <button
-                  type="submit"
-                  onClick={() => {
-                    handleModal(false);
-                  }}
-                >
-                  {" "}
-                  Create Post
-                </button>{" "}
-              </div>
+              <button
+                type="submit"
+                onClick={() => {
+                  handleModal(false);
+                }}
+                className="btn btn-primary btn-lg"
+              >
+                {" "}
+                Create Post
+              </button>{" "}
             </Form>
           </Formik>
         </div>

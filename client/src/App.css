@@ -16,6 +16,15 @@ a:hover {
   color: white;
 }
 
+.buttons {
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.buttons:hover {
+  background-color: rgba(211, 211, 214, 0.4);
+}
+
 /* NAVBAR */
 
 .vacebook-navbar {
@@ -57,14 +66,11 @@ a:hover {
 
 .userbox {
   display: flex;
+  justify-content: center;
 }
 
 .username {
   line-height: 32px;
-}
-
-.username:hover {
-  color: #9b9799;
 }
 
 .vacebook-container {
@@ -156,6 +162,11 @@ a:hover {
   border-radius: 5px;
 }
 
+.formContainer .vacebook-input {
+  width: 100%;
+  margin: 10px 0;
+}
+
 .cancel-button {
   display: flex;
   justify-content: flex-end;
@@ -172,16 +183,14 @@ a:hover {
 }
 
 .formContainer button {
-  flex: 1;
-  height: 40px;
   background-color: rgb(35, 146, 214);
-  border-radius: 5px;
-  color: white;
+  border: none;
+  margin: 10px 0;
 }
 
 .formContainer button:hover {
   cursor: pointer;
-  background-color: rgb(206, 135, 28);
+  background-color: rgb(126, 228, 31);
 }
 
 span {
@@ -296,52 +305,74 @@ span {
 .addCommentContainer .inputComment {
   flex: 1;
   border-radius: 8px;
+  margin-right: 80px;
 }
 
 .addCommentContainer .buttonComment {
-  background-color: rgb(20, 37, 54);
   border-radius: 8px;
-  margin-left: 80px;
   border: none;
-}
-
-.addCommentContainer button {
-  color: white;
+  color: rgb(0, 97, 187);
 }
 
 .addCommentContainer input {
   border: 2px solid rgba(255, 3, 3, 0.466);
 }
 
-.rightSide .listOfComments {
-  flex: 80%;
+.commentPart .listOfComments {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.listOfComments .comment {
+  align-items: center;
+  background-color: rgba(82, 79, 79, 0.4);
+  width: 100%;
+  height: auto;
+  padding: 12px;
+  border-radius: 5px;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+.listOfComments .comment:hover {
+  box-shadow: rgba(100, 100, 111, 0.4) 0px 7px 29px 0px;
+}
+
+.comment .userinfo {
+  flex: 80%;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.profileContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.listOfComments .comment {
-  width: 70%;
-  height: auto;
-  padding: 30px;
-  border: 1px solid lightgray;
-  border-radius: 5px;
-  margin-top: 20px;
+.profileContainer .buttons {
+  margin: 12px;
 }
 
-#individual {
-  height: 500px;
-  width: 600px;
+.ChangePassBtn,
+.ShowDelPostBtn {
+  margin: 12px;
+  padding: 8px;
+  border-radius: 10px;
+  border-color: bisque;
+  background-color: thistle;
 }
 
-#individual .title,
-#individual .footer {
-  font-size: 30px;
+.ChangePassBtn:hover {
+  background-color: greenyellow;
 }
 
-#individual .body {
-  font-size: 25px;
+.ShowDelPostBtn:hover {
+  background-color: red;
+  color: azure;
 }
-
-/* LOGIN */
