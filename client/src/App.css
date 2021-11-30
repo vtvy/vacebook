@@ -231,6 +231,11 @@ span {
   justify-content: space-between;
 }
 
+.useredit {
+  display: flex;
+  justify-content: end;
+}
+
 .userinfo .username {
   /* flex: 50%; */
 }
@@ -256,11 +261,24 @@ span {
   padding: 8px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   background-color: rgb(12, 45, 78);
   color: aliceblue;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
+}
+.footer .countNum {
+  flex: 20%;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.footer .LikeCmtBtn {
+  flex: 80%;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .footer .buttons {

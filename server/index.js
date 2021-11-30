@@ -20,13 +20,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Vacebook application programming interface (API)
 
-// Sign up an vacebook account (1)
+// Sign up an vacebook account (1) (Vy)
 app.post("/account", (req, res) => {
   const data = req.body;
   bcrypt.hash(data.password, 10).then((hash) => {
     db.query("call sign_up(?,?);", [data.username, hash], (err, result) => {
       if (!result[0][0].id) {
-        res.json({ error: "Wrong Username Or Password" });
+        res.json({ error: "Username exists!" });
       } else {
         const Token = sign(
           { username: data.username, id: result[0][0].id },
@@ -42,7 +42,7 @@ app.post("/account", (req, res) => {
   });
 });
 
-// Validate vacebook account (2)
+// Validate vacebook account (2) (Vy)
 app.get("/account/auth", validateToken, (req, res) => {
   User = req.user;
   db.query(
@@ -58,7 +58,7 @@ app.get("/account/auth", validateToken, (req, res) => {
   );
 });
 
-// Sign in an vacebook account (3)
+// Sign in an vacebook account (3) (Vy)
 app.post("/signin", (req, res) => {
   const data = req.body;
   db.query("call sign_in(?);", data.username, (err, result) => {
@@ -84,7 +84,7 @@ app.post("/signin", (req, res) => {
   });
 });
 
-// Create a vacebook post (4)
+// Create a vacebook post (4) (Vy)
 app.post("/post/create", validateToken, (req, res) => {
   const post = req.body;
   UserId = req.user.id;
@@ -101,7 +101,7 @@ app.post("/post/create", validateToken, (req, res) => {
   );
 });
 
-// Show all vacebook posts (5)
+// Show all vacebook posts (5) (Dong)
 app.get("/posts/list", validateToken, (req, res) => {
   UserId = req.user.id;
   db.query("call listPost(?);", UserId, (err, result) => {
@@ -109,7 +109,7 @@ app.get("/posts/list", validateToken, (req, res) => {
   });
 });
 
-// Show a vacebook post of a post id (6)
+// Show a vacebook post of a post id (6) (Vy)
 app.get("/posts/byId/:id", validateToken, (req, res) => {
   const PostId = req.params.id;
   UserId = req.user.id;
@@ -118,7 +118,15 @@ app.get("/posts/byId/:id", validateToken, (req, res) => {
   });
 });
 
-// Add a comment (7)
+// Show all comments of a post (7) (Vy)
+app.get("/comments/:id", (req, res) => {
+  const PostId = req.params.id;
+  db.query("call list_cmt_of(?);", PostId, (err, result) => {
+    res.json(result[0]);
+  });
+});
+
+// Add a comment (8) (Dong)
 app.post("/comment/create", validateToken, (req, res) => {
   comment = req.body;
   UserId = req.user.id;
@@ -131,15 +139,7 @@ app.post("/comment/create", validateToken, (req, res) => {
   );
 });
 
-// Show all comments of a post (8)
-app.get("/comments/:id", (req, res) => {
-  const PostId = req.params.id;
-  db.query("call list_cmt_of(?);", PostId, (err, result) => {
-    res.json(result[0]);
-  });
-});
-
-// Reaction a post (9)
+// Reaction a post (9) (Dong)
 app.post("/like", validateToken, (req, res) => {
   const PostId = req.body.PostId;
   UserId = req.user.id;
@@ -148,14 +148,14 @@ app.post("/like", validateToken, (req, res) => {
   });
 });
 
-// Delete a comment (10)
+// Delete a comment (10) (Vy)
 app.delete("/comment/:id", validateToken, (req, res) => {
   const cmtId = req.params.id;
   db.query("call delete_cmt(?);", cmtId);
   res.json("Delete comment successful!");
 });
 
-// Delete a post (11)
+// Delete a post (11) (Dong)
 app.delete("/post/delete/:id", validateToken, (req, res) => {
   const PostId = req.params.id;
   UserId = req.user.id;
@@ -168,7 +168,7 @@ app.delete("/post/delete/:id", validateToken, (req, res) => {
   });
 });
 
-// Get basic user information (12)
+// Get basic user information (12) (Dong)
 app.get("/user/info/:id", validateToken, (req, res) => {
   const thisUserId = req.params.id;
   db.query(
@@ -180,7 +180,7 @@ app.get("/user/info/:id", validateToken, (req, res) => {
   );
 });
 
-// Get all post of a user (13)
+// Get all post of a user (13) (Dong)
 app.get("/posts/byuserId/:id", validateToken, (req, res) => {
   const thisUserId = req.params.id;
   UserId = req.user.id;
@@ -193,18 +193,18 @@ app.get("/posts/byuserId/:id", validateToken, (req, res) => {
   );
 });
 
-// Change the password (14)
+// Change the password (14) (Vy)
 app.put("/user/changepassword", validateToken, (req, res) => {
   User = req.user;
   const user = req.body;
   db.query("call sign_in(?);", User.username, (err, result) => {
     if (!result[0][0].id) {
-      res.json({ error: "Wrong Username Or Password" });
+      res.json({ error: "Wrong Password" });
       console.log(0);
     } else {
       bcrypt.compare(user.oldPassword, result[0][0].pass).then((match) => {
         if (!match) {
-          res.json({ error: "Wrong Username Or Password" });
+          res.json({ error: "Wrong Password" });
         } else {
           bcrypt.hash(user.newPassword, 10).then((hash) => {
             db.query("call update_password(?,?);", [User.id, hash]);
@@ -216,20 +216,31 @@ app.put("/user/changepassword", validateToken, (req, res) => {
   });
 });
 
-// Show all deleted posts of a user (15)
-app.get("/deleted/posts/:id", validateToken, (req, res) => {
+// Show all deleted posts of a user (15) (Dong)
+app.get("/deleted/posts", validateToken, (req, res) => {
   UserId = req.user.id;
   db.query("call get_deleted_posts(?);", UserId, (err, result) => {
     res.json(result[0]);
   });
 });
 
-// Delete permanently a post (16)
+// Delete permanently a post (16) (Dong)
 app.delete("/post/delete/permant/:id", validateToken, (req, res) => {
   UserId = req.user.id;
   PostId = req.params.id;
   db.query("call delete_post_permant(?,?);", [PostId, UserId]);
   res.json("Delete Permanently!");
+});
+
+// Edit post (17) (Vy)
+app.put("/post/edit", validateToken, (req, res) => {
+  const post = req.body;
+  db.query("call update_post(?,?,?);", [
+    post.postId,
+    post.newTitle,
+    post.newPostText,
+  ]);
+  res.json("Edit post successful!");
 });
 
 app.listen(9998, () => {

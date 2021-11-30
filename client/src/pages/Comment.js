@@ -78,38 +78,6 @@ function Comment() {
       });
   };
 
-  const editPost = (option) => {
-    if (option === "title") {
-      let newTitle = prompt("Enter New Title:");
-      axios.put(
-        "http://localhost:3001/posts/title",
-        {
-          newTitle: newTitle,
-          id: id,
-        },
-        {
-          headers: { Token: localStorage.getItem("Token") },
-        }
-      );
-
-      setPost({ ...post, title: newTitle });
-    } else {
-      let newPostText = prompt("Enter New Text:");
-      axios.put(
-        "http://localhost:3001/posts/postText",
-        {
-          newText: newPostText,
-          id: id,
-        },
-        {
-          headers: { accessToken: localStorage.getItem("accessToken") },
-        }
-      );
-
-      setPost({ ...post, postText: newPostText });
-    }
-  };
-
   return (
     <div className="commentPage">
       <ShowPost listOfPosts={post} setListOfPosts={setPost} />

@@ -42,7 +42,7 @@ function Profile() {
 
   const ShowDelPost = () => {
     axios
-      .get(`http://localhost:9998/deleted/posts/${authState.id}`, {
+      .get("http://localhost:9998/deleted/posts", {
         headers: { Token: localStorage.getItem("Token") },
       })
       .then((response) => {
@@ -63,7 +63,7 @@ function Profile() {
             })}
             alt="avatar"
           />
-          <div className="username">{authState.username}</div>
+          <div className="username">{userState.username}</div>
         </div>
         {authState.username === userState.username && (
           <>
