@@ -1,4 +1,3 @@
-drop database VNforum;
 create database VNforum;
 use VNforum;
 SET GLOBAL log_bin_trust_function_creators = 1;
@@ -167,7 +166,7 @@ delimiter ;
 delimiter $$
 create procedure listPost(in UserId int)
 begin
-	select p.PID, p.title, p.postText as pText, p.UID as id, get_infor(p.UID) as pusername,
+	select p.PID, p.title, p.postText as pText, p.UID as id, get_username_of(p.UID) as pusername,
     get_like_of(p.PID) as numLike, get_cmt_of(p.PID) as numCmt,
     case 
 		when exists (select UID from likes where UID = UserId and PID = p.PID)
@@ -183,7 +182,7 @@ delimiter ;
 delimiter $$
 create procedure getPostByID(in UserId int, in PID int)
 begin
-    select p.PID, p.title, p.postText as pText, p.UID as id, get_infor(p.UID) as pusername,
+    select p.PID, p.title, p.postText as pText, p.UID as id, get_username_of(p.UID) as pusername,
     get_like_of(p.PID) as numLike, get_cmt_of(p.PID) as numCmt,
     case 
 		when exists (select UID from likes where UID = UserId and PID = p.PID)
@@ -229,7 +228,7 @@ delimiter ;
 delimiter $$
 create procedure list_cmt_of(in PID int)
 begin
-	select CID as cmtId, cmtText as cText, c.UID as id, get_infor(c.UID) as Username
+	select CID as cmtId, cmtText as cText, c.UID as id, get_username_of(c.UID) as Username
     from comments c
     where c.PID=PID
     order by c.updatedAt;
@@ -301,8 +300,8 @@ delimiter ;
 delimiter $$
 create procedure delete_post_permant(in PID int, in UID int)
 begin
-    delete from posts_deleted d
-    where d.UID = UID and d.PID = PID;
+    delete from posts_deleted
+    where posts_deleted.UID = UID and posts_deleted.PID = PID;
 end; $$
 delimiter ;
 
@@ -315,11 +314,11 @@ begin
 end; $$
 delimiter ;
 
-call sign_up('hxpdong1','hxpdong');
-call add_post("Title", "I am a hacker, give me 5$ or you will lost your data!", 1);
-call add_post("Title", "I am a hacker, give me 10$ and I will hack the computer of the hacker who hack in your computer (Not including me)!", 1);
+-- call sign_up('hxpdong1','hxpdong');
+-- call add_post("Title", "I am a hacker, give me 5$ or you will lost your data!", 1);
+-- call add_post("Title", "I am a hacker, give me 10$ and I will hack the computer of the hacker who hack in your computer (Not including me)!", 1);
 
-call add_cmt('Đây là cmt', 2, 1);
-call add_cmt('Đây là cmt test 2', 1, 2);
-call add_cmt('Đây là cmt test 3', 1, 3);
-call add_cmt('Đây là cmt test 4', 1, 4);
+-- call add_cmt('Đây là cmt', 2, 1);
+-- call add_cmt('Đây là cmt test 2', 1, 2);
+-- call add_cmt('Đây là cmt test 3', 1, 3);
+-- call add_cmt('Đây là cmt test 4', 1, 4);

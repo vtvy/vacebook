@@ -10,8 +10,8 @@ const { validateToken } = require("./middleware/AccMiddleware");
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "password",
-  database: "VNForum",
+  password: "",
+  database: "Vacebook",
 });
 
 app.use(cors());
